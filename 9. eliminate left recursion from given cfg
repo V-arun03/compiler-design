@@ -1,85 +1,37 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-
-#define MAX_RULES 10
-#define MAX_SYMBOLS 10
-
-// Structure to represent a production rule
-struct ProductionRule {
-    char nonTerminal;
-    char symbols[MAX_SYMBOLS];
-    int numSymbols;
-};
-
-// Function to eliminate left recursion from a CFG
-void eliminateLeftRecursion(struct ProductionRule rules[MAX_RULES], int numRules) {
-    for (int i = 0; i < numRules; i++) {
-        for (int j = 0; j < i; j++) {
-            // Check if there is a direct left recursion
-            if (rules[i].nonTerminal == rules[j].nonTerminal) {
-                // Create new non-terminal
-                char newNonTerminal = 'A' + i;
-
-                // Create new rule for left factoring
-                struct ProductionRule newRule;
-                newRule.nonTerminal = newNonTerminal;
-                newRule.numSymbols = 1;
-                newRule.symbols[0] = '\0';
-
-                // Add remaining symbols of the original rule to the new rule
-                int k = 1;
-                while (rules[i].symbols[k] != '\0') {
-                    newRule.symbols[k - 1] = rules[i].symbols[k];
-                    k++;
-                }
-                newRule.symbols[k - 1] = '\0';
-
-                // Update the original rule to remove left recursion
-                rules[i].numSymbols = 2;
-                rules[i].symbols[0] = newNonTerminal;
-                rules[i].symbols[1] = '\0';
-
-                // Add the new rule to the list of rules
-                rules[numRules++] = newRule;
-            }
-        }
-    }
-
-    // Print the modified rules
-    for (int i = 0; i < numRules; i++) {
-        printf("%c -> %s\n", rules[i].nonTerminal, rules[i].symbols);
-    }
-}
-
-int main() {
-    int numRules;
-    struct ProductionRule rules[MAX_RULES];
-
-    // Input the number of production rules
-    printf("Enter the number of production rules: ");
-    scanf("%d", &numRules);
-
-    // Input the production rules
-    for (int i = 0; i < numRules; i++) {
-        printf("Enter production rule %d (non-terminal symbols, $ for epsilon): ", i + 1);
-        scanf(" %c", &rules[i].nonTerminal);
-
-        char symbol;
-        int j = 0;
-        while (1) {
-            scanf(" %c", &symbol);
-            if (symbol == '$') {
-                break;
-            }
-            rules[i].symbols[j++] = symbol;
-        }
-        rules[i].symbols[j] = '\0';
-        rules[i].numSymbols = j;
-    }
-
-    // Eliminate left recursion and print the modified rules
-    eliminateLeftRecursion(rules, numRules);
-
-    return 0;
-}
+#include<stdio.h>  
+#include<string.h>  
+#define SIZE 10  
+  int main () {  
+       char non_terminal;  
+       char beta,alpha;  
+       int num;  
+       char production[10][SIZE];  
+       int index=3; /* starting of the string following "->" */  
+       printf("Enter Number of Production : ");  
+       scanf("%d",&num);  
+       printf("Enter the grammar as E->E-A :\n");  
+       for(int i=0;i<num;i++){  
+            scanf("%s",production[i]);  
+       }  
+       for(int i=0;i<num;i++){  
+            printf("\nGRAMMAR : : : %s",production[i]);  
+            non_terminal=production[i][0];  
+            if(non_terminal==production[i][index]) {  
+                 alpha=production[i][index+1];  
+                 printf(" is left recursive.\n");  
+                 while(production[i][index]!=0 && production[i][index]!='|')  
+                      index++;  
+                 if(production[i][index]!=0) {  
+                      beta=production[i][index+1];  
+                      printf("Grammar without left recursion:\n");  
+                      printf("%c->%c%c\'",non_terminal,beta,non_terminal);  
+                      printf("\n%c\'->%c%c\'|E\n",non_terminal,alpha,non_terminal);  
+                 }  
+                 else  
+                      printf(" can't be reduced\n");  
+            }  
+            else  
+                 printf(" is not left recursive.\n");  
+            index=3;  
+       }  
+  }   
